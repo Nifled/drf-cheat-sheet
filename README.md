@@ -15,7 +15,7 @@ Summarized from the official docs:
 
 Install the package via `pip`:
 ```
-$ pip install django
+$ pip install djangorestframework
 ```
 
 Then, add `'rest_framework'` to `INSTALLED_APPS` in your `settings.py` file.

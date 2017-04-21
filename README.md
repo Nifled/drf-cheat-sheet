@@ -76,7 +76,7 @@ ModelSerializer has default implementations for the `create()` and `update()` me
 
 There are many options for creating views for your web API, it really depends on what you want and personal preference.
 
-We'll write a `post_list` view with `GET` and `POST` methods for reading and creating new post instances.
+We'll write a `post_list` view with `GET` and `POST` methods for reading and creating new [Post](#base-example-model) instances.
 
 #### Using Function-based views:
 

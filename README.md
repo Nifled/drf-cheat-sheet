@@ -19,6 +19,9 @@ Summarized from the official docs:
 3. [Views](#views)
     - [Function-based views](#using-function-based-views)
     - [Class-based views](#using-class-based-views)
+    - [Generic Class-based views](#using-generic-class-based-views)
+    - [Mixins](#using-mixins)
+    
 
 
 ### Base Example Model
@@ -133,5 +136,37 @@ class PostList(APIView):
 ```
 
 
-#### Using Generic class-based views:
+#### Using Generic Class-based views:
+
+```python
+from rest_framework import generics
+from posts.models import Post
+from posts.serializers import PostSerializer
+
+
+class PostList(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+```
+
 #### Using Mixins:
+
+```python
+from posts.models import Post
+from posts.serializers import PostSerializer
+from rest_framework import generics, mixins
+
+
+class PostList(generics.GenericAPIView,
+               mixins.ListModelMixin,
+               mixins.CreateModelMixin
+               ):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+```

@@ -15,8 +15,10 @@ Summarized from the official docs:
 
 1. [Installation](#installation)
 2. [Serializers](#serializers)
+    - [ModelSerializer](#using-modelserializer-class)
 3. [Views](#views)
     - [Function-based views](#using-function-based-views)
+    - [Class-based views](#using-class-based-views)
 
 
 ### Base Example Model
@@ -107,5 +109,29 @@ def post_list(request, format=None):
 ```
 
 #### Using Class-based views:
+```python
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from posts.models import Post
+from posts.serializers import PostSerializer
+
+
+class PostList(APIView):
+    def get(self, request, format=None):
+        snippets = Post.objects.all()
+        serializer = PostSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+
 #### Using Generic class-based views:
 #### Using Mixins:

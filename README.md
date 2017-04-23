@@ -27,6 +27,9 @@ Summarized from the official docs:
         * [Generating Tokens](#generate-tokens-for-users)
         * [Obtaining Tokens](#obtaining-tokens)
     - [OAuth2](#oauth2)
+5. [Web Browsable API](#web-browsable-api)
+    - [Overriding the Default Theme](#overriding-the-default-theme)
+    - [Full Customization](#full-customization)
 
 
 ### Base Example Model
@@ -237,3 +240,51 @@ OAuth and OAuth2 were previously integrated in DRF, but the corresponding module
 * [Django OAuth Toolkit](https://github.com/evonove/django-oauth-toolkit) (recommended for OAuth2)
 
 If that isn't enough, there's a few more [here](http://www.django-rest-framework.org/topics/third-party-packages/#authentication).
+
+
+### Web Browsable API
+
+The default look DRF gives you for the browsable API is pretty cool on its own, but in case you don't like it, there are provided ways of customization.
+
+#### Overriding the Default theme
+
+First thing you must do is create a template in `templates/rest_framework/api.html` that extends `rest_framework/base.html`.
+
+```
+{% extends "rest_framework/base.html" %}
+```
+
+Now you can modify the many block components that are included in the `base.html` to your styling. Just as you would do on normal Django templates when you have a `base.html`.
+
+* `body` - Whole HTML body.
+* `bootstrap_theme` - CSS for the Bootstrap theme.
+* `bootstrap_navbar_variant` - CSS for only the Navbar.
+* `branding` - Brand component in Navbar (top left).
+* `script` - Custom Javascript.
+* `style` - Custom CSS.
+
+Those are the common ones, here's [all of 'em](http://www.django-rest-framework.org/topics/browsable-api/#blocks).
+
+```html
+{% block branding %}
+    <a class="navbar-brand" rel="nofollow" href="erickdelfin.me">
+        Nifled's Blog
+    </a>
+{% endblock %}
+```
+
+This is how you would modify any other block.
+
+#### Full Customization
+
+If you don't dig the Bootstrap look, you can just drop the whole default look and fully customize it on your own. There is a context provided that you could work with.
+
+* `api_settings` -  API settings
+* `content` - The content of the API response
+* `request` - The request object
+* `response ` - The response object
+* `view ` - The view handling the request
+
+Full list of context variables [here](http://www.django-rest-framework.org/topics/browsable-api/#context).
+
+Take a look at the actual [base HTML](https://github.com/encode/django-rest-framework/blob/73ad88eaae2f49bfd09508f2dcd6446677800a26/rest_framework/templates/rest_framework/base.html) source code for the API in DRF to get an idea of how it's actually made.

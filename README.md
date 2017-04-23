@@ -1,5 +1,5 @@
 # drf-cheat-sheat
-A collection of anything from basics to advanced recommended methods and usages with Django REST Framework for creating browsable and awesome web API's.
+A collection of anything from basics to advanced recommended methods and usages with Django REST Framework for creating browsable and awesome web API's. This could also serve as a quick reference guide.
 
 Here is DRF's [official documentation](http://www.django-rest-framework.org/) in case you need everything in detail.
 
@@ -21,7 +21,12 @@ Summarized from the official docs:
     - [Class-based views](#using-class-based-views)
     - [Generic Class-based views](#using-generic-class-based-views)
     - [Mixins](#using-mixins)
-    
+4. [Authentication](#authentication)
+    - [SessionAuthentication](#sessionauthentication)
+    - [TokenAuthentication](#tokenauthentication)
+        * [Generating Tokens](#generate-tokens-for-users)
+        * [Obtaining Tokens](#obtaining-tokens)
+    - [OAuth2](#oauth2)
 
 
 ### Base Example Model
@@ -170,3 +175,65 @@ class PostList(generics.GenericAPIView,
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 ```
+
+### Authentication
+
+DRF has ready-to-use and integrated authentication schemes, but if you need something more specific, you can customize [your own scheme](http://www.django-rest-framework.org/api-guide/authentication/#custom-authentication).
+
+#### SessionAuthentication
+
+SessionAuthentication uses the default session backend for authentication provided by Django, which is more practical for us devs. Once a user has been successfully authenticated, a User instance is stored in `request.user`.
+
+
+#### TokenAuthentication
+
+The recommended use for the`TokenAuthentication` class is when client-server setups like native apps.
+
+First, add `'rest_framework.authtoken'` to your `INSTALLED_APPS`:
+```python
+INSTALLED_APPS = [
+    # Rest of your installed apps ...
+    'rest_framework',
+    'rest_framework.authtoken'
+]
+```
+
+##### Generate Tokens for users
+ 
+Using signals (in `models.py`).
+
+```python
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+# For existing users
+for user in User.objects.all():
+    Token.objects.get_or_create(user=user)
+
+# For newly created users
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+```
+
+##### Obtaining Tokens
+DRF provides a built in view to obtain tokens given username and password.
+
+```python
+from rest_framework.authtoken import views
+urlpatterns += [
+    url(r'^api-token-auth/', views.obtain_auth_token)
+]
+```
+
+#### OAuth2
+
+OAuth and OAuth2 were previously integrated in DRF, but the corresponding modules were were moved and is now supported as a third-party package. There are also other very cool and handy packages that can be easily implemented.
+
+* [Django Rest Framework OAuth](http://jpadilla.github.io/django-rest-framework-oauth/)
+* [Django OAuth Toolkit](https://github.com/evonove/django-oauth-toolkit) (recommended for OAuth2)
+
+If that isn't enough, there's a few more [here](http://www.django-rest-framework.org/topics/third-party-packages/#authentication).

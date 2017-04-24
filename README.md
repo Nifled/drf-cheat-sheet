@@ -22,6 +22,8 @@ Summarized from the official docs:
     - [Class-based views](#using-class-based-views)
     - [Generic Class-based views](#using-generic-class-based-views)
     - [Mixins](#using-mixins)
+    - [ViewSets](#using-viewsets)
+        * [Routers](#routers)
 4. [Authentication](#authentication)
     - [SessionAuthentication](#sessionauthentication)
     - [TokenAuthentication](#tokenauthentication)
@@ -199,9 +201,9 @@ class PostList(generics.ListCreateAPIView):
 #### Using Mixins:
 
 ```python
+from rest_framework import generics, mixins
 from posts.models import Post
 from posts.serializers import PostSerializer
-from rest_framework import generics, mixins
 
 
 class PostList(generics.GenericAPIView,
@@ -217,6 +219,40 @@ class PostList(generics.GenericAPIView,
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 ```
+
+#### Using ViewSets:
+
+With `ModelViewSet` (in this case), you don't have to create separate views for getting list of objects and detail of one object. ViewSet will handle it for you in a consistent way for both methods.
+
+```python
+from rest_framework import viewsets
+from posts.models import Post
+from posts.serializers import PostSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing post instances.
+    """
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+```
+
+So basically, this would not only generate the `list` view, but also the `detail` view for every [Post](#base-example-model) instance.
+
+##### Routers
+
+Routers in ViewSets allow the URL configuration for your API to be automatically generated using naming standards.
+
+```python
+from rest_framework.routers import DefaultRouter
+from posts.views import PostViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
+urlpatterns = router.urls
+```
+
 
 ### Authentication
 

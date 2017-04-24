@@ -16,6 +16,7 @@ Summarized from the official docs:
 1. [Installation](#installation)
 2. [Serializers](#serializers)
     - [ModelSerializer](#using-modelserializer-class)
+    - [HyperlinkedModelSerializer](#hyperlinkedmodelserializer)
 3. [Views](#views)
     - [Function-based views](#using-function-based-views)
     - [Class-based views](#using-class-based-views)
@@ -73,16 +74,54 @@ Serializers allow complex data like querysets and model instances to be converte
 
 #### Using ModelSerializer class:
 
-Suppose we wanted to create a PostSerializer for our example [Post](#base-example-model) model.
+Suppose we wanted to create a PostSerializer for our example [Post](#base-example-model) model and CommentSerializer for our [Comment](#base-example-model) model.
 
 ```python
 class PostSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Post
         fields = ('id', 'title', 'text', 'created')
+        
+        
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ('post', 'user', 'text')
 ```
 
 ModelSerializer has default implementations for the `create()` and `update()` methods.
+
+#### HyperlinkedModelSerializer
+
+This makes your web API a lot more easy to use (in browser) and would be a nice feature to add.
+
+Lets say we need to see the comments every post has in each of the [Post](#base-example-model) instances of our API and each [Comment](#base-example-model) needs to link(with url) to it's `detail` view.
+
+```python
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'text', 'created', 'comments')
+        read_only_fields = ('comments',)
+```
+
+**Note:** without the `read_only_fields`, the `create` form for Posts would always require a `comments` input, which doesn't make sense (comments on a post are normally made AFTER the post is created).
+
+Another way of hyperlinking is just adding a `HyperlinkedRelatedField` definition to a normal serializer.
+
+```python
+class PostSerializer(serializers.ModelSerializer):
+    comments = serializers.HyperlinkedRelatedField(many=True, view_name='comment-detail', read_only=True)
+    
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'text', 'created', 'comments')
+```
+
+
 
 
 ### Views

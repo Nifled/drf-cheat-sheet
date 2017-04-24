@@ -1,4 +1,4 @@
-# drf-cheat-sheat
+# drf-cheat-sheet
 A collection of anything from basics to advanced recommended methods and usages with Django REST Framework for creating browsable and awesome web API's. This could also serve as a quick reference guide.
 
 Here is DRF's [official documentation](http://www.django-rest-framework.org/) in case you need everything in detail.
@@ -273,7 +273,7 @@ urlpatterns += [
 
 #### OAuth2
 
-OAuth and OAuth2 were previously integrated in DRF, but the corresponding modules were were moved and is now supported as a third-party package. There are also other very cool and handy packages that can be easily implemented.
+OAuth and OAuth2 were previously integrated in DRF, but the corresponding modules were moved and is now supported as a third-party package. There are also other very cool and handy packages that can be easily implemented.
 
 * [Django Rest Framework OAuth](http://jpadilla.github.io/django-rest-framework-oauth/)
 * [Django OAuth Toolkit](https://github.com/evonove/django-oauth-toolkit) (recommended for OAuth2)

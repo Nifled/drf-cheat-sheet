@@ -14,8 +14,9 @@ Summarized from the official docs:
 ## Index
 
 1. [Installation](#installation)
-2. [Serializers](#serializers)
+2. [Serialization](#Serialization)
     - [ModelSerializer](#using-modelserializer-class)
+    - [Nested Serialization](#nested-serialization)
     - [HyperlinkedModelSerializer](#hyperlinkedmodelserializer)
 3. [Views](#views)
     - [Function-based views](#using-function-based-views)
@@ -70,7 +71,7 @@ INSTALLED_APPS = [
 ```
 
 
-### Serializers
+### Serialization
 
 Serializers allow complex data like querysets and model instances to be converted to native Python datatypes that can then be easily rendered into JSON, XML, and other formats.
 
@@ -92,8 +93,37 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('post', 'user', 'text')
 ```
+Or also you could use `exclude` to exclude certain fields from being seialized. ModelSerializer has default implementations for the `create()` and `update()` methods.
 
-ModelSerializer has default implementations for the `create()` and `update()` methods.
+##### Nested Serialization
+
+By default, instances are serialized with primary keys to represent relationships. To get nested serialization we could use, *General* or *Explicit* methods.
+
+###### General
+
+Using `depth` parameter.
+
+```python
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        depth = 2
+```
+
+###### Explicit
+
+When you don't want all the nested fields to be serialized...
+
+```python
+class CommentSerializer(serializers.ModelSerializer):
+    post = PostSerializer()
+    
+    class Meta:
+        model = Comment
+        fields = '__all__'
+```
 
 #### HyperlinkedModelSerializer
 

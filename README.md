@@ -34,6 +34,8 @@ Summarized from the official docs:
 5. [Web Browsable API](#web-browsable-api)
     - [Overriding the Default Theme](#overriding-the-default-theme)
     - [Full Customization](#full-customization)
+6. [Testing](#testing)
+    - [APIRequestFactory](#apirequestfactory)
 
 
 ### Base Example Model
@@ -393,3 +395,53 @@ If you don't dig the Bootstrap look, you can just drop the whole default look an
 Full list of context variables [here](http://www.django-rest-framework.org/topics/browsable-api/#context).
 
 Take a look at the actual [base HTML](https://github.com/encode/django-rest-framework/blob/73ad88eaae2f49bfd09508f2dcd6446677800a26/rest_framework/templates/rest_framework/base.html) source code for the API in DRF to get an idea of how it's actually made.
+
+
+### Testing
+
+It's important to test your API to make sure it works, of course.
+
+#### APIRequestFactory
+
+It has a similar name to Django's [RequestFactory](https://docs.djangoproject.com/en/1.11/topics/testing/advanced/#the-request-factory) class, because it extends it. You can use the different class methods to send test requests to your API.
+
+Lets say we want to write test requests for our example [Post](#base-example-model) model.
+
+```python
+from django.test import TestCase
+from rest_framework.test import APIRequestFactory
+from posts.models import Post
+from posts.views import PostList
+
+
+class PostTest(TestCase):  # Post object, not HTTP method POST.
+    """We'll be testing with the PostList view (class-based view)."""
+
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.post = Post.objects.create(title='Post example', text='Lorem Ipsum')
+        
+    # For HTTP method GET
+    def get(self):
+        view = PostList.as_view()
+        request = self.factory.get('/posts/')
+        response = view(request)
+        
+        self.assertEqual(response.status_code, 200)  # 200 = OK
+
+    # For HTTP method POST
+    def post(self):
+        view = PostList.as_view()
+        
+        # Generating the request
+        request = self.factory.post('/posts/')
+        request.title = 'Post example'
+        request.text = 'Lorem Ipsum'
+        
+        response = view(request)
+        expected = {'title': self.post.title, 'text': self.post.text}
+        
+        self.assertEqual(response.status_code, 201)  # 201 = created
+        self.assertEqual(response.data, expected)
+
+```

@@ -434,9 +434,7 @@ class PostTest(TestCase):  # Post object, not HTTP method POST.
         view = PostList.as_view()
         
         # Generating the request
-        request = self.factory.post('/posts/')
-        request.title = 'Post example'
-        request.text = 'Lorem Ipsum'
+        request = self.factory.post('/posts/', {'title': 'Post example', 'text': 'Lorem Ipsum'})
         
         response = view(request)
         expected = {'title': self.post.title, 'text': self.post.text}

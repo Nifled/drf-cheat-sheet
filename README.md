@@ -159,7 +159,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 #### Dynamically modifying fields in serializer
 
-This makes your web API a lot more easy for extract limited number of parameter in response. Let's say you want to be able to set which fields should be used by a serializer at the point of intialization.
+This makes your web API a lot more easy for extract limited number of parameter in response. Let's say you want to set which fields should be used by a serializer at the point of initialization.
 
 Just copy below code and past it in your serliazer file
 ```python

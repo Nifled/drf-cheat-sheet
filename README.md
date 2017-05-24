@@ -74,6 +74,7 @@ INSTALLED_APPS = [
 ]
 ```
 
+<br/>
 
 ### Serialization
 
@@ -195,6 +196,9 @@ UserSerializer(user, fields=('id', 'email'))
 
 Here, you will get only ```id```and ```email``` from serializer instead of all.
 
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
 
 ### Views
 
@@ -323,6 +327,9 @@ router.register(r'users', UserViewSet)
 urlpatterns = router.urls
 ```
 
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
 
 ### Authentication
 
@@ -386,6 +393,9 @@ OAuth and OAuth2 were previously integrated in DRF, but the corresponding module
 
 If that isn't enough, there's a few more [here](http://www.django-rest-framework.org/topics/third-party-packages/#authentication).
 
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
 
 ### Web Browsable API
 
@@ -434,6 +444,9 @@ Full list of context variables [here](http://www.django-rest-framework.org/topic
 
 Take a look at the actual [base HTML](https://github.com/encode/django-rest-framework/blob/73ad88eaae2f49bfd09508f2dcd6446677800a26/rest_framework/templates/rest_framework/base.html) source code for the API in DRF to get an idea of how it's actually made.
 
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
 
 ### Testing
 
@@ -481,3 +494,8 @@ class PostTest(TestCase):  # Post object, not HTTP method POST.
         self.assertEqual(response.data, expected)
 
 ```
+
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
+

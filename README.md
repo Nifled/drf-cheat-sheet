@@ -14,6 +14,7 @@ Summarized from the official docs:
 ## Index
 
 1. [Installation](#installation)
+
 2. [Serialization](#Serialization)
     - [ModelSerializer](#using-modelserializer-class)
     - [Nested Serialization](#nested-serialization)
@@ -27,16 +28,24 @@ Summarized from the official docs:
     - [Mixins](#using-mixins)
     - [ViewSets](#using-viewsets)
         * [Routers](#routers)
-4. [Authentication](#authentication)
+
+4. [Pagination](#pagination)
+    - [With Generic Class-based views or Viewsets](#with-generic-class-based-views-or-viewsets)
+    - [With APIView or other Non-Generic View](#with-apiview-or-other-non-generic-view)
+    - [Modify Pagination Class](#modify-pagination-class)
+
+5. [Authentication](#authentication)
     - [SessionAuthentication](#sessionauthentication)
     - [TokenAuthentication](#tokenauthentication)
         * [Generating Tokens](#generate-tokens-for-users)
         * [Obtaining Tokens](#obtaining-tokens)
     - [OAuth2](#oauth2)
-5. [Web Browsable API](#web-browsable-api)
+
+6. [Web Browsable API](#web-browsable-api)
     - [Overriding the Default Theme](#overriding-the-default-theme)
     - [Full Customization](#full-customization)
-6. [Testing](#testing)
+
+7. [Testing](#testing)
     - [APIRequestFactory](#apirequestfactory)
 
 
@@ -119,7 +128,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 ###### Explicit
 
-When you don't want all the nested fields to be serialized...
+Yuo can also define and nest serializers within eachother...
 
 ```python
 class CommentSerializer(serializers.ModelSerializer):
@@ -130,11 +139,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 ```
 
+So here, the comment's `post` field (how we named it in models.py) will serialize however we defined it in `PostSerializer`.
+
 #### HyperlinkedModelSerializer
 
 This makes your web API a lot more easy to use (in browser) and would be a nice feature to add.
 
-Lets say we need to see the comments every post has in each of the [Post](#base-example-model) instances of our API and each [Comment](#base-example-model) needs to link(with url) to it's `detail` view.
+Lets say we wanted to see the comments that every post has in each of the [Post](#base-example-model) instances of our API. With `HyperlinkedModelSerializer`, instead of having nested primary keys or nested fields, we get a link to each individual [Comment](#base-example-model) (url).
 
 ```python
 class PostSerializer(serializers.HyperlinkedModelSerializer):
@@ -325,6 +336,98 @@ from posts.views import PostViewSet
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 urlpatterns = router.urls
+```
+
+[Back to Top ↑](#drf-cheat-sheet)
+
+<br/>
+
+### Pagination
+
+This can usually be performed automatically with `generic class-based views` and `viewsets`. If you're using `APIView`, it must be explicitly applied.
+
+#### With Generic Class-based views or Viewsets
+
+For these views to use pagination, all we have to do is override `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` in our DRF settings in `settings.py`.
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
+```
+
+#### With APIView or other Non-Generic View
+
+First we must define the default behaviour for our pagination, which is done in `settings.py`.
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
+```
+
+Now we need to handle our pagination through our view (APIView in this case).
+
+```python
+from rest_framework.settings import api_settings
+from rest_framework.views import APIView
+
+class PostView(APIView):
+    # ... queryset, serializer_class, etc
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
+    # We need to override the get method to achieve pagination
+    def get(self, request):
+        # ...
+        page = self.paginate_queryset(self.queryset)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        # ...
+
+    # Now add the pagination handlers taken from 
+    # django-rest-framework/rest_framework/generics.py
+    @property
+    def paginator(self):
+        """
+        The paginator instance associated with the view, or `None`.
+        """
+     if not hasattr(self, '_paginator'):
+         if self.pagination_class is None:
+             self._paginator = None
+         else:
+             self._paginator = self.pagination_class()
+     return self._paginator
+
+     def paginate_queryset(self, queryset):
+         """
+         Return a single page of results, or `None` if pagination is disabled.
+         """
+         if self.paginator is None:
+             return None
+         return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+     def get_paginated_response(self, data):
+         """
+         Return a paginated style `Response` object for the given output data.
+         """
+         return self.paginator.get_paginated_response(data)
+```
+
+#### Modify Pagination Class
+
+We can define our own pagination class and override default attributes. Using this new class, you can make one, multiple or all views use this instead of `LimitOffsetPagination` or other ones provided by DRF.
+
+```python
+class CustomPagination(PageNumberPagination):
+    """
+    Client controls the response page size (with query param), limited to a maximum of `max_page_size` and default of `page_size`.
+    """
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 ```
 
 [Back to Top ↑](#drf-cheat-sheet)

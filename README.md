@@ -325,6 +325,33 @@ class PostViewSet(viewsets.ModelViewSet):
 
 So basically, this would not only generate the `list` view, but also the `detail` view for every [Post](#base-example-model) instance.
 
+##### ViewSet Actions
+
+ REST framework will provide routes for a standard set of create/retrieve/update/destroy style actions, which are list, create, retrieve, update, partial_update and destroy. But we can still add custom actions for our `ad-hoc` behaviours with `@action` decorator. The router will configure its url accordingly.
+ For example, we can add comments action in the our `PostViewSet` to retrieve all the comments of specific post as follows:
+ 
+ ```python
+from rest_framework import viewsets
+from posts.models import Post
+from posts.serializers import PostSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    ...
+    
+    @action(methods=['get'], detail=True)
+    def comments(self, request, pk=None):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            return Response({"error": "Post does not exist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        comments = post.comments.all()
+        return Response(CommentModelSerializer(comments, many=True))
+```
+
+On registering the view set as `router.register(r'posts', PostViewSet)`, this action will then be available at the url `^posts/{pk}/comments/$`.
+
 ##### Routers
 
 Routers in ViewSets allow the URL configuration for your API to be automatically generated using naming standards.

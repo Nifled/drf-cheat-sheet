@@ -325,33 +325,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
 So basically, this would not only generate the `list` view, but also the `detail` view for every [Post](#base-example-model) instance.
 
-##### ViewSet Actions
-
- REST framework will provide routes for a standard set of create/retrieve/update/destroy style actions, which are list, create, retrieve, update, partial_update and destroy. But we can still add custom actions for our `ad-hoc` behaviours with `@action` decorator. The router will configure its url accordingly.
- For example, we can add comments action in the our `PostViewSet` to retrieve all the comments of specific post as follows:
- 
- ```python
-from rest_framework import viewsets
-from posts.models import Post
-from posts.serializers import PostSerializer
-
-
-class PostViewSet(viewsets.ModelViewSet):
-    ...
-    
-    @action(methods=['get'], detail=True)
-    def comments(self, request, pk=None):
-        try:
-            post = Post.objects.get(id=pk)
-        except Post.DoesNotExist:
-            return Response({"error": "Post does not exist"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        comments = post.comments.all()
-        return Response(CommentModelSerializer(comments, many=True))
-```
-
-On registering the view set as `router.register(r'posts', PostViewSet)`, this action will then be available at the url `^posts/{pk}/comments/$`.
-
 ##### Routers
 
 Routers in ViewSets allow the URL configuration for your API to be automatically generated using naming standards.
@@ -364,6 +337,33 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 urlpatterns = router.urls
 ```
+
+##### Custom Actions in ViewSets
+DRF provides helpers to add custom actions for _ad-hoc_ behaviours with the `@action` decorator. The router will configure its url accordingly.
+For example, we can add a `comments` action in the our `PostViewSet` to retrieve all the comments of a specific post as follows:
+
+ ```python
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from posts.models import Post
+from posts.serializers import PostSerializer, CommentSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    ...
+    
+    @action(methods=['get'], detail=True)
+    def comments(self, request, pk=None):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        comments = post.comments.all()
+        return Response(CommentSerializer(comments, many=True))
+```
+
+On registering the view set as `router.register(r'posts', PostViewSet)`, this action will then be available at the url `posts/{pk}/comments/`.
 
 [Back to Top ↑](#drf-cheat-sheet)
 

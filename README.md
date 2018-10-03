@@ -28,7 +28,7 @@ Summarized from the official docs:
     - [Mixins](#using-mixins)
     - [ViewSets](#using-viewsets)
         * [Routers](#routers)
-        * [Custom actions](#custom-actions=in-viewsets)
+        * [Custom actions](#custom-actions-in-viewsets)
 
 4. [Pagination](#pagination)
     - [With Generic Class-based views or Viewsets](#with-generic-class-based-views-or-viewsets)

@@ -15,7 +15,7 @@ Summarized from the official docs:
 
 1. [Installation](#installation)
 
-2. [Serialization](#Serialization)
+2. [Serialization](#serialization)
     - [ModelSerializer](#using-modelserializer-class)
     - [Nested Serialization](#nested-serialization)
     - [HyperlinkedModelSerializer](#hyperlinkedmodelserializer)
@@ -28,6 +28,7 @@ Summarized from the official docs:
     - [Mixins](#using-mixins)
     - [ViewSets](#using-viewsets)
         * [Routers](#routers)
+        * [Custom actions](#custom-actions=in-viewsets)
 
 4. [Pagination](#pagination)
     - [With Generic Class-based views or Viewsets](#with-generic-class-based-views-or-viewsets)
@@ -363,7 +364,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(CommentSerializer(comments, many=True))
 ```
 
-On registering the view set as `router.register(r'posts', PostViewSet)`, this action will then be available at the url `posts/{pk}/comments/`.
+Upon registering the view as `router.register(r'posts', PostViewSet)`, this action will then be available at the url `posts/{pk}/comments/`.
 
 [Back to Top ↑](#drf-cheat-sheet)
 

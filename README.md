@@ -129,7 +129,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 ###### Explicit
 
-Yuo can also define and nest serializers within eachother...
+You can also define and nest serializers within eachother...
 
 ```python
 class CommentSerializer(serializers.ModelSerializer):

@@ -108,7 +108,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('post', 'user', 'text')
 ```
-Or also you could use `exclude` to exclude certain fields from being seialized. ModelSerializer has default implementations for the `create()` and `update()` methods.
+Or you can also use `exclude` to exclude certain fields from being seialized. ModelSerializer has default implementations for the `create()` and `update()` methods.
 
 ##### Nested Serialization
 
@@ -172,9 +172,9 @@ class PostSerializer(serializers.ModelSerializer):
 
 #### Dynamically modifying fields in serializer
 
-This makes your web API a lot more easy for extract limited number of parameter in response. Let's say you want to set which fields should be used by a serializer at the point of initialization.
+This makes your API easier for extracting a limited number of parameters in a response. Let's say you want to set which fields should be used by a serializer at the point of initialization.
 
-Just copy below code and past it in your serliazer file
+Just copy below code and paste it in your serliazer file
 ```python
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
@@ -214,7 +214,7 @@ Here, you will get only ```id```and ```email``` from serializer instead of all.
 
 ### Views
 
-There are many options for creating views for your web API, it really depends on what you want and personal preference.
+There are many options for creating views for your API, it really depends on your API's requirements or personal preference.
 
 We'll write a `post_list` view with `GET` and `POST` methods for reading and creating new [Post](#base-example-model) instances.
 
@@ -372,7 +372,7 @@ Upon registering the view as `router.register(r'posts', PostViewSet)`, this acti
 
 ### Pagination
 
-This can usually be performed automatically with `generic class-based views` and `viewsets`. If you're using `APIView`, it must be explicitly applied.
+This can usually be obtained automatically with `generic class-based views` and `viewsets`. If you're using `APIView`, it must be explicitly applied.
 
 #### With Generic Class-based views or Viewsets
 
@@ -553,7 +553,7 @@ Those are the common ones, here's [all of 'em](http://www.django-rest-framework.
 
 ```html
 {% block branding %}
-    <a class="navbar-brand" rel="nofollow" href="erickdelfin.me">
+    <a class="navbar-brand" rel="nofollow" href="https://erick.netlify.app">
         Nifled's Blog
     </a>
 {% endblock %}
